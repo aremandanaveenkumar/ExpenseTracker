@@ -12,7 +12,7 @@ SCOPED_CREDS = CREDS.with_scopes(SCOPE)
 GSPREAD_CLIENT = gspread.authorize(CREDS)
 SHEET = GSPREAD_CLIENT.open('ExpenseTracker')
 
-monthlyexpenses = SHEET.worksheet('MonthlyExpenses')
+monthlyexpenses = SHEET.worksheet('monthlyexpenses')
 
 data = monthlyexpenses.get_all_values()
 
