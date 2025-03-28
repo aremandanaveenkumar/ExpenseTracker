@@ -34,6 +34,7 @@ def get_categories():
             header_index += 1
     
     selected = input("Select Category by inputing relevant Number :")
+    validate_input(selected)
     selected_index = int(selected)
     if selected_index == 0:
         selected_index += 1
@@ -42,6 +43,14 @@ def get_categories():
     col_headers = subcategories.col_values(selected_index)
     print(col_headers)
 
+def validate_input(input_value):
+    try:
+        if not input_value:
+            raise ValueError(
+                " Input is empty "
+            )
+    except ValueError as e:
+        print(f"Invalid data: {e}, please try again.\n")
     
 get_categories()
 
