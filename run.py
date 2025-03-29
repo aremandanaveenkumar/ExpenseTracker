@@ -20,6 +20,7 @@ subcategories = SHEET.worksheet('subcategories')
 
 headers = subcategories.col_values(1)
 
+
 def get_categories():
     """
     ask user for a category and display sub categories
@@ -29,10 +30,10 @@ def get_categories():
     header_index = 0
     row_headers = subcategories.row_values(1)
     for header in row_headers:
-        if header :
+        if header:
             print(f'{header} : {header_index}')
             header_index += 1
-    
+
     selected = input("Select Category by inputing relevant Number :")
     validate_input(selected)
     selected_index = int(selected)
@@ -41,9 +42,20 @@ def get_categories():
     elif selected_index > 0:
         selected_index += 2
     col_headers = subcategories.col_values(selected_index)
-    print(col_headers)
+    colheader_index = 0
+    for colheader in col_headers:
+        if colheader:
+            print(f'{colheader} : {colheader_index}')
+            colheader_index += 1  
+    selected_col = input("Select Sub Category by inputing relevant Number :")
+    validate_input(selected_col)
+    # selected_colindex = int(selected_col)
+
 
 def validate_input(input_value):
+    """
+    validate input from user
+    """
     try:
         if not input_value:
             raise ValueError(
@@ -51,7 +63,8 @@ def validate_input(input_value):
             )
     except ValueError as e:
         print(f"Invalid data: {e}, please try again.\n")
-    
+
+
 get_categories()
 
-    
+
