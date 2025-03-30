@@ -1,5 +1,6 @@
 import gspread
 from google.oauth2.service_account import Credentials
+from googleapiclient.discovery import build
 
 SCOPE = [
     "https://www.googleapis.com/auth/spreadsheets",
@@ -19,6 +20,19 @@ data = monthlyexpenses.get_all_values()
 subcategories = SHEET.worksheet('subcategories')
 
 headers = subcategories.col_values(1)
+
+
+def get_last_modified():
+    """
+    get the date of the file last modified
+    if it is not today then clear all old
+    entries from the worksheet subcategories
+    """
+    fid = SHEET.id
+    drive = build('drive', 'v3', credentials=CREDS)
+    file_md = drive.files().get(fileId=fid, fields='modifiedTime').execute()
+    last_modified_time = file_md.get('modifiedTime')
+    print(f"Last modified time: {last_modified_time}")
 
 
 def get_categories():
@@ -46,7 +60,7 @@ def get_categories():
     for colheader in col_headers:
         if colheader:
             print(f'{colheader} : {colheader_index}')
-            colheader_index += 1  
+            colheader_index += 1
     selected_col = input("Select Sub Category by inputing relevant Number :")
     validate_input(selected_col)
     # selected_colindex = int(selected_col)
@@ -65,6 +79,4 @@ def validate_input(input_value):
         print(f"Invalid data: {e}, please try again.\n")
 
 
-get_categories()
-
-
+get_last_modified()
