@@ -27,6 +27,13 @@ def clear_old_entries():
     """
     clear yesterday entries from sub categories columns
     """
+    row_headers = subcategories.row_values(1)
+    for i in range(2, len(row_headers) + 2, 2):
+        colC = chr(i + 64)
+        cols = subcategories.range(colC + '1' + ':' + colC + '12')
+        for col in cols:
+            col.value = ''
+        subcategories.update_cells(cols)
 
 
 def get_last_modified():
@@ -87,7 +94,10 @@ def validate_input(input_value):
 
 
 def main():
-    modified = get_last_modified().strptime('%Y-%m-%d')
-    today = datetime.today().strptime('%Y-%m-%d')
-    if modified != today:
+    modified = datetime.strptime(get_last_modified(), '%Y-%m-%dT%H:%M:%S.%fZ')
+    today = datetime.today()
+    if modified.date() != today.date():
         clear_old_entries()
+
+
+main()
