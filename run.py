@@ -36,7 +36,7 @@ def clear_old_entries():
         colC = chr(i + 64)
         cols = subcategories.range(colC + '1' + ':' + colC + '12')
         for col in cols:
-            col.value = ''
+            col.value = 0
         subcategories.update_cells(cols)
 
 
@@ -61,11 +61,10 @@ def get_categories():
 
     header_index = 0
     row_headers = subcategories.row_values(1)
-    for header in row_headers:
-        if header:
-            print(f'{header} : {header_index}')
-            header_index += 1
-
+    for i in range(1, len(row_headers), 2):
+        print(f'{row_headers[i - 1]} : {header_index}')
+        header_index += 1
+    print('Return To Main Menu : 99')
     selected = input("Select Category by inputing relevant Number :")
     validate_input(selected)
     selected_index = int(selected)
@@ -73,15 +72,7 @@ def get_categories():
         selected_index += 1
     elif selected_index > 0:
         selected_index += 2
-    col_headers = subcategories.col_values(selected_index)
-    colheader_index = 0
-    for colheader in col_headers:
-        if colheader:
-            print(f'{colheader} : {colheader_index}')
-            colheader_index += 1
-    selected_col = input("Select Sub Category by inputing relevant Number :")
-    validate_input(selected_col)
-    # selected_colindex = int(selected_col)
+    return selected_index
 
 
 def validate_input(input_value):
@@ -113,6 +104,7 @@ def main():
         print("Do Nothing! Just Exit : 100")
         option = input("Select by inputing relevant Number : ")
         validate_input(option)
+        print("\033[H\033[J", end="")
         if (int(option) == 30):
             rowdata = data[-1]
             print(f"Budget is : {rowdata[1]}")
@@ -128,6 +120,17 @@ def main():
             rowdata = daily_data[-1]
             for header, headerval in zip(headerdata, rowdata):
                 print(f"{header} : {headerval}")
+        elif (int(option) == 70):
+            idx = get_categories()
+            if idx > 0 and idx < 12:
+                col_headers = subcategories.col_values(idx)
+                col_values = subcategories.col_values(idx + 1)
+                for header, headerval in zip(col_headers, col_values):
+                    print(f'{header} : {headerval}')
+        elif (int(option) == 80):
+            idx = get_categories()
+            if idx > 0 and idx < 12:
+                print('')
         elif (int(option) == 100):
             break
         else:
