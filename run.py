@@ -20,6 +20,10 @@ data = monthlyexpenses.get_all_values()
 
 subcategories = SHEET.worksheet('subcategories')
 
+dailysummary = SHEET.worksheet('dailysummary')
+
+daily_data = dailysummary.get_all_values()
+
 headers = subcategories.col_values(1)
 
 
@@ -98,6 +102,36 @@ def main():
     today = datetime.today()
     if modified.date() != today.date():
         clear_old_entries()
+    while True:
+        print('')
+        print("Set Budget For this Month : 30")
+        print("Get Expenditure For this Month : 40")
+        print("Get Balance For this Month : 50")
+        print("Get Daily Summary : 60")
+        print("Get Daily Summary for a Category : 70")
+        print("Set How much you spent for a Sub Category : 80")
+        print("Do Nothing! Just Exit : 100")
+        option = input("Select by inputing relevant Number : ")
+        validate_input(option)
+        if (int(option) == 30):
+            rowdata = data[-1]
+            print(f"Budget is : {rowdata[1]}")
+        elif (int(option) == 40):
+            rowdata = data[-1]
+            print(f"Expenditure is : {rowdata[2]}")
+        elif (int(option) == 50):
+            rowdata = data[-1]
+            print(f"Balance is : {rowdata[3]}")
+        elif (int(option) == 60):
+            print("Daily Summary is : ")
+            headerdata = daily_data[0]
+            rowdata = daily_data[-1]
+            for header, headerval in zip(headerdata, rowdata):
+                print(f"{header} : {headerval}")
+        elif (int(option) == 100):
+            break
+        else:
+            print('Invalid Input! Try Again.')
 
 
 main()
