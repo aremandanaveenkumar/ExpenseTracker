@@ -1,6 +1,7 @@
 import gspread
 from google.oauth2.service_account import Credentials
 from googleapiclient.discovery import build
+from datetime import datetime
 
 SCOPE = [
     "https://www.googleapis.com/auth/spreadsheets",
@@ -22,6 +23,12 @@ subcategories = SHEET.worksheet('subcategories')
 headers = subcategories.col_values(1)
 
 
+def clear_old_entries():
+    """
+    clear yesterday entries from sub categories columns
+    """
+
+
 def get_last_modified():
     """
     get the date of the file last modified
@@ -32,7 +39,7 @@ def get_last_modified():
     drive = build('drive', 'v3', credentials=CREDS)
     file_md = drive.files().get(fileId=fid, fields='modifiedTime').execute()
     last_modified_time = file_md.get('modifiedTime')
-    print(f"Last modified time: {last_modified_time}")
+    return last_modified_time
 
 
 def get_categories():
@@ -79,4 +86,8 @@ def validate_input(input_value):
         print(f"Invalid data: {e}, please try again.\n")
 
 
-get_last_modified()
+def main():
+    modified = get_last_modified().strptime('%Y-%m-%d')
+    today = datetime.today().strptime('%Y-%m-%d')
+    if modified != today:
+        clear_old_entries()
