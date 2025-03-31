@@ -123,6 +123,19 @@ def validate_input(input_value):
         print(f"Invalid data: {e}, please try again.\n")
 
 
+def update_column_total(idx):
+    """
+    update first column with total of cells below
+    """
+    total = 0
+    col_values = subcategories.col_values(idx[0] + 1)
+    for ind in range(1, len(col_values)):
+        total += int(col_values[ind])
+    rowChar = chr(idx[0] + 65)
+    cell_label = f'{rowChar}1'
+    subcategories.update_acell(cell_label, total)
+
+
 def main():
     modified = datetime.strptime(get_last_modified(), '%Y-%m-%dT%H:%M:%S.%fZ')
     today = datetime.today()
@@ -171,6 +184,7 @@ def main():
                 amount = input(f'Amount Spent For {idx[2]} : ')
                 validate_input(amount)
                 subcategories.update_acell(cell_label, amount)
+                update_column_total(idx)
         elif (int(option) == 100):
             print("\033[H\033[J", end="")
             break
