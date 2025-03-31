@@ -26,12 +26,14 @@ daily_data = dailysummary.get_all_values()
 
 headers = subcategories.col_values(1)
 
+row_headers = subcategories.row_values(1)
+
 
 def clear_old_entries():
     """
     clear yesterday entries from sub categories columns
     """
-    row_headers = subcategories.row_values(1)
+
     for i in range(2, len(row_headers) + 2, 2):
         colC = chr(i + 64)
         cols = subcategories.range(colC + '1' + ':' + colC + '12')
@@ -57,22 +59,51 @@ def get_categories():
     """
     ask user for a category and display sub categories
     """
-    print('Choose a number for displaying sub categories if any : ')
-
-    header_index = 0
-    row_headers = subcategories.row_values(1)
+    print('Choose a number for displaying Categories : ')
     for i in range(1, len(row_headers), 2):
-        print(f'{row_headers[i - 1]} : {header_index}')
-        header_index += 1
+        print(f'{row_headers[i - 1]} : {i}')
     print('Return To Main Menu : 99')
     selected = input("Select Category by inputing relevant Number :")
     validate_input(selected)
     selected_index = int(selected)
-    if selected_index == 0:
-        selected_index += 1
-    elif selected_index > 0:
-        selected_index += 2
-    return selected_index
+    if selected_index % 2 == 0 or selected_index > len(row_headers):
+        return 99
+    else:
+        return selected_index
+    # if selected_index == 0:
+    #     selected_index += 1
+    # elif selected_index > 0:
+    #     selected_index += 2
+
+
+def get_sub_categories():
+    """
+    return sub category index for entering value
+    """
+    selected_indices = []
+    rowindex = get_categories()
+    if rowindex == 99:
+        selected_indices.append(99)
+        print('Selection is InValid!')
+        return selected_indices
+    col_headers = subcategories.col_values(rowindex)
+    header_index = 1
+    for header in col_headers:
+        print(f"{header} : {header_index}")
+        header_index += 1
+    print('Return To Main Menu : 99')
+    selected = input("Select SubCategory by inputing relevant Number :")
+    validate_input(selected)
+    print("\033[H\033[J", end="")
+    selected_index = int(selected)
+    if selected_index > len(col_headers):
+        selected_indices.append(99)
+        print('Selection is InValid!')
+        return selected_indices
+    selected_indices.append(rowindex)
+    selected_indices.append(selected_index)
+    selected_indices.append(col_headers[selected_index])
+    return selected_indices
 
 
 def validate_input(input_value):
@@ -122,16 +153,23 @@ def main():
                 print(f"{header} : {headerval}")
         elif (int(option) == 70):
             idx = get_categories()
-            if idx > 0 and idx < 12:
+            if idx > 0 and idx <= len(row_headers):
                 col_headers = subcategories.col_values(idx)
                 col_values = subcategories.col_values(idx + 1)
                 for header, headerval in zip(col_headers, col_values):
                     print(f'{header} : {headerval}')
         elif (int(option) == 80):
-            idx = get_categories()
-            if idx > 0 and idx < 12:
-                print('')
+            idx = get_sub_categories()
+            print(f'Amount Spent For {idx[2]} : ')
+            # if len(idx) == 3 and idx[1] <= len(row_headers):
+            #     # rowChar = chr(idx[0] + 65)
+            #     # label = f'{rowChar}{idx[1]}'
+            #     print("\033[H\033[J", end="")
+            #     amount = input(f'Amount Spent For {idx[2]} : ')
+            #     validate_input(amount)
+            #     subcategories.update_cell(idx[1], idx[0] + 1, amount)
         elif (int(option) == 100):
+            print("\033[H\033[J", end="")
             break
         else:
             print('Invalid Input! Try Again.')
