@@ -100,9 +100,13 @@ def get_sub_categories():
         selected_indices.append(99)
         print('Selection is InValid!')
         return selected_indices
+    elif selected_index == 1:
+        selected_indices.append(99)
+        print('Selection : 1 is not Valid. This is Updated Automatically')
+        return selected_indices
     selected_indices.append(rowindex)
-    selected_indices.append(selected_index)
-    selected_indices.append(col_headers[selected_index])
+    selected_indices.append(selected_index - 1)
+    selected_indices.append(col_headers[selected_index - 1])
     return selected_indices
 
 
@@ -160,14 +164,13 @@ def main():
                     print(f'{header} : {headerval}')
         elif (int(option) == 80):
             idx = get_sub_categories()
-            print(f'Amount Spent For {idx[2]} : ')
-            # if len(idx) == 3 and idx[1] <= len(row_headers):
-            #     # rowChar = chr(idx[0] + 65)
-            #     # label = f'{rowChar}{idx[1]}'
-            #     print("\033[H\033[J", end="")
-            #     amount = input(f'Amount Spent For {idx[2]} : ')
-            #     validate_input(amount)
-            #     subcategories.update_cell(idx[1], idx[0] + 1, amount)
+            if len(idx) == 3 and idx[1] <= len(row_headers):
+                rowChar = chr(idx[0] + 65)
+                cell_label = f'{rowChar}{idx[1] + 1}'
+                print("\033[H\033[J", end="")
+                amount = input(f'Amount Spent For {idx[2]} : ')
+                validate_input(amount)
+                subcategories.update_acell(cell_label, amount)
         elif (int(option) == 100):
             print("\033[H\033[J", end="")
             break
