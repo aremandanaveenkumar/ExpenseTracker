@@ -25,7 +25,7 @@ headers = subcategories.col_values(1)
 row_headers = subcategories.row_values(1)
 
 
-def clear_old_entries():
+def clear_daily_entries():
     """
     clear yesterday entries from sub categories columns
     add new 0 valued row in daily summary
@@ -159,10 +159,10 @@ def main():
     today = datetime.today()
     present_month = today.month
     modified_month = modified.month
-    if present_month == modified_month:
+    if present_month != modified_month:
         clear_daily_summary(present_month)
-    if modified.date() == today.date():
-        clear_old_entries()
+    if modified.date() != today.date():
+        clear_daily_entries()
     while True:
         print('')
         print("Get Budget For this Month : 20")
@@ -192,6 +192,7 @@ def main():
             for cell, data in zip(cell_list, rowdata):
                 cell.value = data
             monthlyexpenses.update_cells(cell_list)
+            print("Budget Set. Sheet is Updated!")
         elif (int(option) == 40):
             rowdata = monthly_data[-1]
             print(f"Expenditure is : {rowdata[2]}")
