@@ -35,7 +35,6 @@ def clear_daily_entries():
     for i in range(2, len(row_headers) + 2, 2):
         colC = chr(i + 64)
         cols = subcategories.range(colC + '1' + ':' + colC + '12')
-        # rowvalues.append(row_headers[i])
         for col in cols:
             col.value = 0
         subcategories.update_cells(cols)
@@ -143,7 +142,9 @@ def validate_input(input_value):
 
 def update_column_total(idx):
     """
-    update first column with total of cells below
+    update first column with total of cells below in subcategories
+    update last row with totals in daily summary
+    update last row with totals and calculate balance in monthly expenses
     """
     total = 0
     col_values = subcategories.col_values(idx[0] + 1)
@@ -152,6 +153,32 @@ def update_column_total(idx):
     rowChar = chr(idx[0] + 65)
     cell_label = f'{rowChar}1'
     subcategories.update_acell(cell_label, total)
+    monthly_data = monthlyexpenses.get_all_values()
+    daily_data = dailysummary.get_all_values()
+    rowdata = monthly_data[-1]
+    rowvalues = []
+    row_headers = subcategories.row_values(1)
+    for i in range(2, len(row_headers) + 2, 2):
+        rowvalues.append(row_headers[i-1])
+    row_count = len(daily_data)
+    cell_list = dailysummary.range(f'A{row_count}:L{row_count}')
+    for cell, data in zip(cell_list, rowvalues):
+        cell.value = data
+    dailysummary.update_cells(cell_list)
+    row_count = len(daily_data)
+    cell_list = dailysummary.range(f'A2:L{row_count}')
+    expenditure = 0
+    balance = 0
+    for cell in cell_list:
+        expenditure += int(cell.value)
+    rowdata[2] = expenditure
+    balance = int(rowdata[1]) - expenditure
+    rowdata[3] = balance
+    row_count = len(monthly_data)
+    cell_list = monthlyexpenses.range(f'A{row_count}:D{row_count}')
+    for cell, data in zip(cell_list, rowdata):
+        cell.value = data
+    monthlyexpenses.update_cells(cell_list)
 
 
 def main():
