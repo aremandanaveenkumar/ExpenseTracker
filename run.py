@@ -32,14 +32,30 @@ row_headers = subcategories.row_values(1)
 def clear_old_entries():
     """
     clear yesterday entries from sub categories columns
+    add new 0 valued row in daily summary
     """
 
+    rowvalues = []
     for i in range(2, len(row_headers) + 2, 2):
         colC = chr(i + 64)
         cols = subcategories.range(colC + '1' + ':' + colC + '12')
+        rowvalues.append(row_headers[i])
         for col in cols:
             col.value = 0
         subcategories.update_cells(cols)
+    dailysummary.append_row(rowvalues)
+
+
+def clear_daily_summary():
+    """
+    clear entries in dailysummary sheet 
+    if last modified month is not equal
+    to present month
+    """
+
+    first_row = dailysummary.row_values(1)
+    dailysummary.clear()
+    dailysummary.append_row(first_row)
 
 
 def get_last_modified():
@@ -139,6 +155,10 @@ def update_column_total(idx):
 def main():
     modified = datetime.strptime(get_last_modified(), '%Y-%m-%dT%H:%M:%S.%fZ')
     today = datetime.today()
+    present_month = today.month
+    modified_month = modified.month
+    if present_month != modified_month:
+        clear_daily_summary()
     if modified.date() != today.date():
         clear_old_entries()
     while True:
@@ -185,6 +205,7 @@ def main():
                 validate_input(amount)
                 subcategories.update_acell(cell_label, amount)
                 update_column_total(idx)
+                print('Sheet Updated!')
         elif (int(option) == 100):
             print("\033[H\033[J", end="")
             break
