@@ -16,13 +16,9 @@ SHEET = GSPREAD_CLIENT.open('ExpenseTracker')
 
 monthlyexpenses = SHEET.worksheet('monthlyexpenses')
 
-data = monthlyexpenses.get_all_values()
-
 subcategories = SHEET.worksheet('subcategories')
 
 dailysummary = SHEET.worksheet('dailysummary')
-
-daily_data = dailysummary.get_all_values()
 
 headers = subcategories.col_values(1)
 
@@ -35,20 +31,20 @@ def clear_old_entries():
     add new 0 valued row in daily summary
     """
 
-    rowvalues = []
+    rowvalues = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     for i in range(2, len(row_headers) + 2, 2):
         colC = chr(i + 64)
         cols = subcategories.range(colC + '1' + ':' + colC + '12')
-        rowvalues.append(row_headers[i])
+        # rowvalues.append(row_headers[i])
         for col in cols:
             col.value = 0
         subcategories.update_cells(cols)
     dailysummary.append_row(rowvalues)
 
 
-def clear_daily_summary():
+def clear_daily_summary(present_month):
     """
-    clear entries in dailysummary sheet 
+    clear entries in dailysummary sheet
     if last modified month is not equal
     to present month
     """
@@ -56,6 +52,12 @@ def clear_daily_summary():
     first_row = dailysummary.row_values(1)
     dailysummary.clear()
     dailysummary.append_row(first_row)
+    monthly_data = monthlyexpenses.get_all_values()
+    rowdata = monthly_data[-1]
+    month = int(rowdata[0])
+    if month != present_month:
+        rowvalues = [present_month, 0, 0, 0]
+        monthlyexpenses.append_row(rowvalues)
 
 
 def get_last_modified():
@@ -157,12 +159,13 @@ def main():
     today = datetime.today()
     present_month = today.month
     modified_month = modified.month
-    if present_month != modified_month:
-        clear_daily_summary()
-    if modified.date() != today.date():
+    if present_month == modified_month:
+        clear_daily_summary(present_month)
+    if modified.date() == today.date():
         clear_old_entries()
     while True:
         print('')
+        print("Get Budget For this Month : 20")
         print("Set Budget For this Month : 30")
         print("Get Expenditure For this Month : 40")
         print("Get Balance For this Month : 50")
@@ -173,14 +176,27 @@ def main():
         option = input("Select by inputing relevant Number : ")
         validate_input(option)
         print("\033[H\033[J", end="")
-        if (int(option) == 30):
-            rowdata = data[-1]
+        monthly_data = monthlyexpenses.get_all_values()
+        daily_data = dailysummary.get_all_values()
+        if (int(option) == 20):
+            rowdata = monthly_data[-1]
             print(f"Budget is : {rowdata[1]}")
+        elif (int(option) == 30):
+            rowdata = monthly_data[-1]
+            budget_input = input("Set Budget to : ")
+            validate_input(budget_input)
+            budget = int(budget_input)
+            rowdata[1] = budget
+            row_count = len(monthly_data)
+            cell_list = monthlyexpenses.range(f'A{row_count}:D{row_count}')
+            for cell, data in zip(cell_list, rowdata):
+                cell.value = data
+            monthlyexpenses.update_cells(cell_list)
         elif (int(option) == 40):
-            rowdata = data[-1]
+            rowdata = monthly_data[-1]
             print(f"Expenditure is : {rowdata[2]}")
         elif (int(option) == 50):
-            rowdata = data[-1]
+            rowdata = monthly_data[-1]
             print(f"Balance is : {rowdata[3]}")
         elif (int(option) == 60):
             print("Daily Summary is : ")
