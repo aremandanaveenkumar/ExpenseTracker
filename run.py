@@ -224,14 +224,19 @@ def main():
                 monthlyexpenses.update_cells(cell_list)
                 print("Budget Set. Sheet is Updated!")
             else:
+                print("\033[H\033[J", end="")
                 print(f' input : {budget_input} is invalid Input!')
         elif (int(option) == 40):
             rowdata = monthly_data[-1]
+            print("\033[H\033[J", end="")
             print(f"Expenditure is : {rowdata[2]}")
         elif (int(option) == 50):
             rowdata = monthly_data[-1]
+            print("\033[H\033[J", end="")
             print(f"Balance is : {rowdata[3]}")
         elif (int(option) == 60):
+            print("\033[H\033[J", end="")
+            print('')
             print("Daily Summary is : ")
             headerdata = []
             for i in range(1, len(row_headers), 2):
@@ -244,6 +249,7 @@ def main():
             if idx > 0 and idx <= len(row_headers):
                 col_headers = subcategories.col_values(idx)
                 col_values = subcategories.col_values(idx + 1)
+                print("\033[H\033[J", end="")
                 for header, headerval in zip(col_headers, col_values):
                     print(f'{header} : {headerval}')
         elif (int(option) == 80):
@@ -259,11 +265,13 @@ def main():
                     update_column_total(idx)
                     print('Sheet Updated!')
                 else:
+                    print("\033[H\033[J", end="")
                     print(f' input : {amount_in} is invalid Input!')
         elif (int(option) == 100):
             print("\033[H\033[J", end="")
             break
         else:
+            print("\033[H\033[J", end="")
             print(f' input : {option_in} is an Invalid Input! Try Again.')
 
 
