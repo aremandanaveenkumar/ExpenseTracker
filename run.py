@@ -81,7 +81,7 @@ def get_categories():
         print(f'{row_headers[i - 1]} : {i}')
     print('Return To Main Menu : 99')
     selected = input("Select Category by inputing relevant Number :")
-    validate_input(selected)
+    selected = validate_input(selected)
     selected_index = int(selected)
     if selected_index % 2 == 0 or selected_index > len(row_headers):
         return 99
@@ -110,16 +110,20 @@ def get_sub_categories():
         header_index += 1
     print('Return To Main Menu : 99')
     selected = input("Select SubCategory by inputing relevant Number :")
-    validate_input(selected)
+    selected = validate_input(selected)
     print("\033[H\033[J", end="")
     selected_index = int(selected)
-    if selected_index > len(col_headers):
+    if selected_index == 0:
         selected_indices.append(99)
         print('Selection is InValid!')
         return selected_indices
     elif selected_index == 1:
         selected_indices.append(99)
         print('Selection : 1 is not Valid. This is Updated Automatically')
+        return selected_indices
+    elif selected_index > len(col_headers):
+        selected_indices.append(99)
+        print('Selection is InValid!')
         return selected_indices
     selected_indices.append(rowindex)
     selected_indices.append(selected_index - 1)
@@ -132,12 +136,10 @@ def validate_input(input_value):
     validate input from user
     """
     try:
-        if not input_value:
-            raise ValueError(
-                " Input is empty "
-            )
-    except ValueError as e:
-        print(f"Invalid data: {e}, please try again.\n")
+        val = int(input_value)
+        return input_value
+    except ValueError:
+        return "0"
 
 
 def update_column_total(idx):
@@ -170,7 +172,7 @@ def update_column_total(idx):
     expenditure = 0
     balance = 0
     for cell in cell_list:
-        expenditure += int(cell.value)
+        expenditure += int(validate_input(cell.value))
     rowdata[2] = expenditure
     balance = int(rowdata[1]) - expenditure
     rowdata[3] = balance
@@ -200,8 +202,8 @@ def main():
         print("Get Daily Summary for a Category : 70")
         print("Set How much you spent for a Sub Category : 80")
         print("Do Nothing! Just Exit : 100")
-        option = input("Select by inputing relevant Number : ")
-        validate_input(option)
+        option_in = input("Select by inputing relevant Number : ")
+        option = validate_input(option_in)
         print("\033[H\033[J", end="")
         monthly_data = monthlyexpenses.get_all_values()
         daily_data = dailysummary.get_all_values()
@@ -211,15 +213,18 @@ def main():
         elif (int(option) == 30):
             rowdata = monthly_data[-1]
             budget_input = input("Set Budget to : ")
-            validate_input(budget_input)
-            budget = int(budget_input)
-            rowdata[1] = budget
-            row_count = len(monthly_data)
-            cell_list = monthlyexpenses.range(f'A{row_count}:D{row_count}')
-            for cell, data in zip(cell_list, rowdata):
-                cell.value = data
-            monthlyexpenses.update_cells(cell_list)
-            print("Budget Set. Sheet is Updated!")
+            budget_in = validate_input(budget_input)
+            budget = int(budget_in)
+            if budget > 0:
+                rowdata[1] = budget
+                row_count = len(monthly_data)
+                cell_list = monthlyexpenses.range(f'A{row_count}:D{row_count}')
+                for cell, data in zip(cell_list, rowdata):
+                    cell.value = data
+                monthlyexpenses.update_cells(cell_list)
+                print("Budget Set. Sheet is Updated!")
+            else:
+                print(f' input : {budget_input} is invalid Input!')
         elif (int(option) == 40):
             rowdata = monthly_data[-1]
             print(f"Expenditure is : {rowdata[2]}")
@@ -245,16 +250,19 @@ def main():
                 rowChar = chr(idx[0] + 65)
                 cell_label = f'{rowChar}{idx[1] + 1}'
                 print("\033[H\033[J", end="")
-                amount = input(f'Amount Spent For {idx[2]} : ')
-                validate_input(amount)
-                subcategories.update_acell(cell_label, amount)
-                update_column_total(idx)
-                print('Sheet Updated!')
+                amount_in = input(f'Amount Spent For {idx[2]} : ')
+                amount = validate_input(amount_in)
+                if int(amount) > 0:
+                    subcategories.update_acell(cell_label, amount)
+                    update_column_total(idx)
+                    print('Sheet Updated!')
+                else:
+                    print(f' input : {amount_in} is invalid Input!')
         elif (int(option) == 100):
             print("\033[H\033[J", end="")
             break
         else:
-            print('Invalid Input! Try Again.')
+            print(f' input : {option_in} is an Invalid Input! Try Again.')
 
 
 main()
