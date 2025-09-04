@@ -233,7 +233,9 @@ def main():
             print(f"Balance is : {rowdata[3]}")
         elif (int(option) == 60):
             print("Daily Summary is : ")
-            headerdata = daily_data[0]
+            headerdata = []
+            for i in range(1, len(row_headers), 2):
+                headerdata.append(row_headers[i - 1])
             rowdata = daily_data[-1]
             for header, headerval in zip(headerdata, rowdata):
                 print(f"{header} : {headerval}")
